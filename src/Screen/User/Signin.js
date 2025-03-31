@@ -320,6 +320,8 @@ const styles = StyleSheet.create({
     // fontWeight: '900',
     textDecorationLine: 'underline',
     bottom: 30,
+    marginBottom: 10,
+    marginTop: 10,
   },
   Text3: {
     fontWeight: 'bold',

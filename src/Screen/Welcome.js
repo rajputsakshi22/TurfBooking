@@ -104,7 +104,8 @@ const styles = StyleSheet.create({
     height: height / 24,
     width: width / 2.9,
     bottom: 80,
-    margin: 5,
+    margin: 10,
+    // marginBottom: 10,
   },
   footerImage: {
     height: height * 0.1,
@@ -118,5 +119,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'white',
     fontWeight: '900',
+    
   },
 });

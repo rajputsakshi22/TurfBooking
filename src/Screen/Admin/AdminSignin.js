@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     bottom: 30,
     marginBottom: 10, //** */
+    marginTop: 10,//** */
   },
   Text3: {
     fontWeight: 'bold',
