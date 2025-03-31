@@ -375,17 +375,18 @@ const Signup = ({navigation}) => {
                 </View>
               </View>
 
-              <View style={styles.inputContainer}>
+              {/* <View style={styles.inputContainer}>
                 <View style={styles.Input1}>
                   <FontAwesome5 name="image" color={'#0039a6'} size={15} />
                   <View style={styles.input}>
                     <TouchableOpacity
                       style={[
                         styles.SubmitButton,
-                        {backgroundColor: isValid ? '#1F41BB' : '#a5b3e3'},
+                        {backgroundColor: isValid ? '#1F41BB' : '#a5b3e3', marginTop: 120},
                       ]}
                       onPress={() => handleSelectImages(setFieldValue)}>
                       <Text style={styles.SubmitText}>Select Images</Text>
+                      
                     </TouchableOpacity>
 
                     {images.length > 0 && (
@@ -405,6 +406,46 @@ const Signup = ({navigation}) => {
                     </Text>
                   </View>
                 </View>
+              </View> */}
+              <View style={styles.inputContainer}>
+                <View style={styles.Input1}>
+                  <FontAwesome5 name="image" color={'#0039a6'} size={15} />
+                  <View
+                    style={[
+                      styles.input,
+                      {
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      },
+                    ]}>
+                    <TouchableOpacity
+                      style={[
+                        styles.SubmitButton,
+                        {backgroundColor: isValid ? '#1F41BB' : '#a5b3e3', marginTop: 25},
+                      ]}
+                      onPress={() => handleSelectImages(setFieldValue)}>
+                      <Text style={styles.SubmitText}>Select Images</Text>
+                    </TouchableOpacity>
+
+                    {/* Placeholder beside button */}
+                    <Text style={{marginLeft: 10}}>
+                      {images.length}/5 image select
+                    </Text>
+                  </View>
+                </View>
+
+                {images.length > 0 && (
+                  <ScrollView horizontal style={{marginTop: 20}}>
+                    {renderImages()}
+                  </ScrollView>
+                )}
+
+                {errors.images && touched.images && (
+                  <Text style={{color: 'red', marginTop: 10}}>
+                    {errors.images}
+                  </Text>
+                )}
               </View>
 
               <View style={styles.inputContainer}>
@@ -730,6 +771,8 @@ const styles = StyleSheet.create({
     height: height / 24,
     width: width / 3,
     margin: 10,
+    marginTop: 20,
+    marginBottom: 25,
   },
   SubmitText: {
     fontFamily: 'Poppins-Bold',

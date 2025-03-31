@@ -46,12 +46,29 @@ const genderOptions = [
 
 const role = [{label: 'customer', value: 'customer'}];
 
-const handleCancel = resetForm => {
-  resetForm(); // Reset the form values to initial state
-};
-
 const Signup = ({navigation}) => {
   const [showPassword, setShowPassword] = useState(true);
+
+  // Define handleCancel inside the component
+  const handleCancel = resetForm => {
+    Alert.alert(
+      'Are you sure?',
+      'This will clear all the entered information.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            resetForm();
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <Formik
       initialValues={{
@@ -97,7 +114,7 @@ const Signup = ({navigation}) => {
         errors,
         isValid,
         touched,
-        resetForm, // Destructure resetForm from Formik
+        resetForm,
       }) => (
         <ScrollView>
           <View style={styles.Container}>
@@ -225,9 +242,6 @@ const Signup = ({navigation}) => {
                       marginTop: 1,
                     }}
                   />
-                  {touched.gender && errors.gender && (
-                    <Text style={styles.errortext}>{errors.gender}</Text>
-                  )}
                 </View>
 
                 <View
@@ -316,7 +330,6 @@ const Signup = ({navigation}) => {
                 }}>
                 <TouchableOpacity
                   onPress={handleSubmit}
-                  // onPress={() => navigation.navigate('BottomTab')}
                   disabled={!isValid}
                   style={[
                     styles.SubmitButton,
@@ -327,7 +340,7 @@ const Signup = ({navigation}) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() => handleCancel(resetForm)} // Call handleCancel with resetForm function
+                  onPress={() => handleCancel(resetForm)}
                   style={[
                     styles.SubmitButton,
                     {backgroundColor: isValid ? '#1F41BB' : '#a5b3e3'},

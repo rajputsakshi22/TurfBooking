@@ -17,10 +17,7 @@ const {height, width} = Dimensions.get('window');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const validationSchema = Yup.object().shape({
-  username: Yup.string()
-    .max(15, 'Too Long!')
-    // .min(5, 'Too Short!')
-    .required('Username is required'),
+  username: Yup.string().max(15, 'Too Long!').required('Username is required'),
   password: Yup.string()
     .max(100, 'Too Long!')
     .min(5, 'Too Short!')
@@ -29,24 +26,30 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
     .required('Confirm Password is required'),
 });
-const handleWelcomePress = async () => {
-  try {
-    await AsyncStorage.removeItem('token');
-    navigation.navigate('Welcome');
-  } catch (error) {
-    console.error('Error logging out:', error);
-  }
-};
-const handleCancel = resetForm => {
-  resetForm();
-};
-
-// console.log('Customer info>>>>>>>>>>>>>>>>>:');
 
 const Login = ({navigation}) => {
-  // const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState(true);
+
+  // Define handleCancel inside the component with navigation
+  const handleCancel = resetForm => {
+    Alert.alert(
+      'Are you sure?',
+      'This will clear all the entered information.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            resetForm();
+          },
+        },
+      ],
+    );
+  };
 
   return (
     <Formik
@@ -70,7 +73,6 @@ const Login = ({navigation}) => {
               result && result.data.clist[0].role.toString(),
             );
 
-            // Pass customerID to the next page
             navigation.navigate('BottomTab');
             Alert.alert('Login Successfully...');
           })
@@ -90,7 +92,7 @@ const Login = ({navigation}) => {
         errors,
         isValid,
         touched,
-        resetForm, // Destructure resetForm from Formik
+        resetForm,
       }) => (
         <View style={styles.Container}>
           <View style={styles.BGBox}>
@@ -165,8 +167,6 @@ const Login = ({navigation}) => {
               <Text style={styles.errortext}>{errors.confirmPassword}</Text>
             )}
 
-            {/* old code //////////////////////////////////////////////////////// */}
-
             <View
               style={{
                 flexDirection: 'row',
@@ -184,9 +184,9 @@ const Login = ({navigation}) => {
                 <Text style={styles.SubmitText}>Login</Text>
               </TouchableOpacity>
 
+              {/* Use handleCancel for canceling the form */}
               <TouchableOpacity
-                onPress={handleWelcomePress}
-                // onPress={() => handleWelcomePress}
+                onPress={() => handleCancel(resetForm)}
                 style={[
                   styles.SubmitButton,
                   {backgroundColor: isValid ? '#666699' : '#a5b3e3'},
@@ -327,32 +327,6 @@ const styles = StyleSheet.create({
     color: 'black',
     // fontWeight: '900',
     bottom: 5,
-  },
-  Input: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    width: width / 1.8,
-    backgroundColor: '#e8ecf8',
-    height: height / 18,
-    borderBottomRightRadius: 5,
-    borderTopRightRadius: 5,
-  },
-  Inputicon: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    width: width / 12,
-    backgroundColor: '#e8ecf8',
-    height: height / 18,
-    borderBottomLeftRadius: 5,
-    borderTopLeftRadius: 5,
-  },
-
-  Text4: {
-    fontFamily: 'Roboto-Bold',
-    fontSize: 10,
-    color: 'black',
   },
   errortext: {
     fontFamily: 'Roboto-Bold',

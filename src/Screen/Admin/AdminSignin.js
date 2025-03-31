@@ -24,13 +24,30 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
     .required('Confirm Password is required'),
 });
-const handleCancel = resetForm => {
-  resetForm(); // Reset the form values to initial state
-};
 
 const AdminSignin = ({navigation}) => {
   const [showPassword, setShowPassword] = useState(true);
   const [showconfirmPassword, setShowconfirmPassword] = useState(true);
+
+  // Define handleCancel inside the component and pass navigation
+  const handleCancel = resetForm => {
+    Alert.alert(
+      'Are you sure?',
+      'This will clear all the entered information.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            resetForm();
+          },
+        },
+      ],
+    );
+  };
 
   return (
     <Formik
@@ -302,6 +319,7 @@ const styles = StyleSheet.create({
     // fontWeight: '900',
     textDecorationLine: 'underline',
     bottom: 30,
+    marginBottom: 10, //** */
   },
   Text3: {
     fontWeight: 'bold',
