@@ -1,0 +1,574 @@
+// import React, { useEffect, useState, useRef } from "react";
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   FlatList,
+//   TouchableOpacity,
+// } from "react-native";
+// import { useNavigation } from "@react-navigation/native";
+// import { ScrollView } from "react-native";
+// import { getDeviceWiseAlertReportAdmin ,getDeviceWiseAlertReport } from "../../../services/AlertReportAPI";
+// import FontAwesome from "react-native-vector-icons/FontAwesome";
+// import RNPickerSelect from "react-native-picker-select";
+// import { getDeviceDropDownListAdmin } from "../../../services/UserAPI";
+// import moment from "moment";
+// import Icon from "react-native-vector-icons/FontAwesome";
+// import RNFetchBlob from "rn-fetch-blob";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+// import { fetchAdminUserListTechType } from "../../AllDropDownList";
+// import Toast from "react-native-toast-message";
+// const AdminDeviceWiseNbiotTab = () => {
+//   const navigation = useNavigation();
+//   const [userList, setUserList] = useState([]);
+//   const [selectedUser, setSelectedUser] = useState(null);
+//   const [payloadList, setPayloadList] = useState([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [loading, setLoading] = useState(false);
+//   const [hasMore, setHasMore] = useState(true);
+//   const [itemsPerPage, setItemsPerPage] = useState(10);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [deviceList, setDeviceList] = useState([]);
+//   const [selectedValue, setSelectedValue] = useState(null); 
+
+// ///////////////////////////////////////
+
+
+//   const loadPayloadListAfterRenderHitApi = async (
+//     page,
+//     device = "",
+//     fromDate = "",
+//     toDate = ""
+//   ) => {
+//     setLoading(true);
+//     try {
+//       const response = await getDeviceWiseAlertReport(
+//         page - 1,
+//         device,
+//         fromDate,
+//         toDate
+//       );
+//       console.log(
+//         "getDeviceWiseAlertReport::::::::::::::::Adminwise  DeviceWise::::::::::::::::::::::::::::::::::: list",
+//         response
+//       );
+//       setPayloadList((prevList) => [...prevList, ...response.data.content]);
+//       setHasMore(response.data.content.length === itemsPerPage);
+//       setCurrentPage(page);
+//     } catch (error) {
+//       console.error("Error fetching getDeviceList list", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const loadPayloadList = async (
+//     page,
+//     User="",
+//     device = "",
+//     fromDate = "",
+//     toDate = ""
+//   ) => {
+//     setLoading(true);
+//     try {
+//       const response = await getDeviceWiseAlertReportAdmin(
+//         page - 1,
+//         User,
+//         device,
+//         fromDate,
+//         toDate
+//       );
+//       console.log(
+//         "getDeviceWiseAlertReport:::::::::::::::: DeviceWise::::::::::::::::::::::::::::::::::: list",
+//         response
+//       );
+//       setPayloadList((prevList) => [...prevList, ...response.data.content]);
+//       setHasMore(response.data.content.length === itemsPerPage);
+//       setCurrentPage(page);
+//     } catch (error) {
+//       console.error("Error fetching getDeviceList list", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getAdminWiseUserListData = async () => {
+//     try {
+//       const result = await fetchAdminUserListTechType();
+//       console.log("get AdminWise UserList result66 technology Type:", result);
+//       setUserList(result);
+//       if (result.length > 0) {
+//         // setSelectedUser(result[0].value);
+//         setSelectedUser(null);
+//       }
+//     } catch (error) {
+//       console.error("Error Adminwise userlist:", error);
+//     }
+//   };
+
+//   const getDeviceDropDownListData = async (pkUserId) => {
+//     try {
+//       const result = await getDeviceDropDownListAdmin(pkUserId);
+//       let list = result.data.map((item) => ({
+//         label: item.deviceName,
+//         // value: item.deviceName,
+//         value: item.deviceMACId,
+//       }));
+//       setDeviceList(list);
+//       setSelectedValue(null); // Reset selected device when user changes
+//       console.log("getDeviceDropDownList77============>:", result.data);
+//     } catch (error) {
+//       console.error("getDeviceDropDownList78============>:", error);
+//     }
+//   };
+
+
+//   useEffect(() => {
+//     loadPayloadListAfterRenderHitApi(1)
+//     // loadPayloadList(1,selectedUser);
+//     getAdminWiseUserListData();
+//   }, []);
+
+//   useEffect(() => {
+//     if (selectedUser !== null) {
+//       getDeviceDropDownListData(selectedUser);
+//     }
+//   }, [selectedUser]);
+
+
+//   useEffect(() => {
+//     if (selectedUser !== null && selectedValue !== null) {
+//       setPayloadList([]);
+//       loadPayloadList(1, selectedUser, selectedValue);
+//     }
+//   }, [selectedUser,selectedValue]);
+
+//   const handleScroll = (event) => {
+//     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+//     const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+//     if (isCloseToBottom && !loading && hasMore) {
+//       loadPayloadList(currentPage + 1, selectedUser, selectedValue);
+//     }
+//   };
+
+
+
+//   const renderUserRow = (payload) => {
+//     return (
+//       <View style={styles.payloadRow}>
+//       <View style={styles.flatStyle} key={payload.pkNotificationId}>
+//         <View style={{ flexDirection: "row", padding: 4 }}>
+//           <Text style={styles.deviceName}>{payload.deviceName}</Text>
+//         </View>
+//         <View style={{ paddingLeft: 3.5 }}>
+//           <Text>{payload.timestamp}</Text>
+//         </View>
+//         <>
+//           <View style={styles.alertContainer}>
+//             <View>
+//               <Text style={[styles.alertText, { color: payload.alt1 !== null && payload.alt1 !== 0 ? "red" : "black" }]}>
+//                 {payload.alt1 !== null ? payload.alt1 : 0}
+//               </Text>
+//               <Text style={styles.alertLabel}>CREDIT OVERDRAFT</Text>
+//             </View>
+//             <View>
+//               <Text style={[styles.alertText, { color: payload.alt2 !== null && payload.alt2 !== 0 ? "red" : "black" }]}>
+//                 {payload.alt2 !== null ? payload.alt2 : 0}
+//               </Text>
+//               <Text style={styles.alertLabel}>CREDIT ZERO</Text>
+//             </View>
+//           </View>
+//         </>
+//         {selectedItem === payload.pkNotificationId ? (
+//           <>
+//             <View style={styles.expandedAlertContainer}>
+//               <View>
+//                 <Text style={[styles.alertText, { color: payload.alt3 !== null && payload.alt3 !== 0 ? "red" : "black" }]}>
+//                   {payload.alt3 !== null ? payload.alt3 : 0}
+//                 </Text>
+//                 <Text style={styles.alertLabel}>CREDIT LOW</Text>
+//               </View>
+//               <View>
+//                 <Text style={[styles.alertText, { color: payload.alt4 !== null && payload.alt4 !== 0 ? "red" : "black" }]}>
+//                   {payload.alt4 !== null ? payload.alt4 : 0}
+//                 </Text>
+//                 <Text style={styles.alertLabel}>VALVE STATUS</Text>
+//               </View>
+//             </View>
+//             <View style={styles.expandedAlertContainer}>
+//               <View>
+//                 <Text style={[styles.alertText, { color: payload.alt5 !== null && payload.alt5 !== 0 ? "red" : "black" }]}>
+//                   {payload.alt5 !== null ? payload.alt5 : 0}
+//                 </Text>
+//                 <Text style={styles.alertLabel}>BATTERY LOW</Text>
+//               </View>
+//               <View>
+//                 <Text style={[styles.alertText, { color: payload.alt6 !== null && payload.alt6 !== 0 ? "red" : "black" }]}>
+//                   {payload.alt6 !== null ? payload.alt6 : 0}
+//                 </Text>
+//                 <Text style={styles.alertLabel}>TAMPAR MGT</Text>
+//               </View>
+//             </View>
+//             <View style={styles.expandedAlertContainer}>
+//               <View>
+//                 <Text style={[styles.alertText, { color: payload.alt7 !== null && payload.alt7 !== 0 ? "red" : "black" }]}>
+//                   {payload.alt7 !== null ? payload.alt7 : 0}
+//                 </Text>
+//                 <Text style={styles.alertLabel}>TAMPAR VIB</Text>
+//               </View>
+//               <View>
+//                 <Text style={[styles.alertText, { color: payload.alt8 !== null && payload.alt8 !== 0 ? "red" : "black" }]}>
+//                   {payload.alt8 !== null ? payload.alt8 : 0}
+//                 </Text>
+//                 <Text style={styles.alertLabel}>TAMPAR MIU</Text>
+//               </View>
+//             </View>
+//             <View style={styles.expandedAlertContainer}>
+//               <View>
+//                 <Text style={[styles.alertText, { color: payload.valve !== null && payload.valve !== 0 ? "red" : "black" }]}>
+//                   {payload.valve !== null ? payload.valve : 0}
+//                 </Text>
+//                 <Text style={styles.alertLabel}>Valve</Text>
+//               </View>
+//             </View>
+//           </>
+//         ) : (
+//           <TouchableOpacity
+//             style={styles.moreButton}
+//             onPress={() => setSelectedItem(payload.pkNotificationId)}
+//           >
+//             <Text style={styles.moreButtonText}>View More</Text>
+//           </TouchableOpacity>
+//         )}
+//       </View>
+//     </View>
+//     );
+//   };
+
+//   const handleExcelDownload1tabsMacId = async (selectedUser) => {
+//     if (!selectedUser) {
+//       Toast.show({
+//         // type: "error",
+//         // text1: "Error",
+//         text1: "Warnning",
+//         text2: "Please select all fields.",
+//         position: 'top',
+//         visibilityTime: 2000,
+//       });
+//       return;
+//     }
+//     try {
+//       const { fs } = RNFetchBlob;
+//       const DownloadDir = fs.dirs.DownloadDir;
+
+//       const options = {
+//         fileCache: true,
+//         addAndroidDownloads: {
+//           useDownloadManager: true,
+//           notification: true,
+//           path: ${DownloadDir}/DeviceWiseNbiotPayloadReport.xls,
+//         },
+//       };
+
+//       const selectedDeviceMACId = selectedValue || ""; // Extract selected device MAC ID
+//       const fileType = "excel";
+//       const meterType = JSON.parse(
+//         await AsyncStorage.getItem("selectedMeterType")
+//       );
+//       const deviceType = JSON.parse(
+//         await AsyncStorage.getItem("selectedDeviceType")
+//       );
+//       const fromDate = "";
+//       const toDate = "";
+//       // https://amr.embel.co.in/iotmeter/nbiot/getalertreportsbetweendateanddevicewise?role=user&fkUserId=53&meterType=gas&deviceType=nbiot&fileType=excel&fromDate=&toDate=&deviceName=EMBEL-OPEN_CPU
+//       const url = https://amr.embel.co.in:/iotmeter/nbiot/getalertreportsbetweendateanddevicewise?role=user&fkUserId=${selectedUser}&meterType=${meterType}&deviceType=${deviceType}&fileType=${fileType}&deviceName=${selectedDeviceMACId}&fromDate=${fromDate}&toDate=${toDate};
+
+//       const token = await AsyncStorage.getItem("token");
+
+//       const response = await RNFetchBlob.config(options).fetch("GET", url, {
+//         Authorization: Bearer ${token},
+//       });
+//       console.log("File downloaded tourlurlurlurlurlurlurl:", url);
+//       alert("File Downloaded Successfully.");
+//       console.log("File downloaded to:", response.path());
+//     } catch (error) {
+//       console.error("Error downloading file:", error);
+//     }
+//   };
+//   const handlePDFDownload1tabsMacId = async (selectedUser) => {
+//     if (!selectedUser) {
+//       Toast.show({
+//         // type: "error",
+//         // text1: "Error",
+//         text1: "Warnning",
+//         text2: "Please select all fields.",
+//         position: 'top',
+//         visibilityTime: 2000,
+//       });
+//       return;
+//     }
+//     try {
+//       const { fs } = RNFetchBlob;
+//       const DownloadDir = fs.dirs.DownloadDir;
+
+//       const options = {
+//         fileCache: true,
+//         addAndroidDownloads: {
+//           useDownloadManager: true,
+//           notification: true,
+//           path: ${DownloadDir}/DeviceWiseNbiotPayloadReport.pdf,
+//         },
+//       };
+
+//       // const fkUserId = await AsyncStorage.getItem("fkUserId");
+//       // const role = await AsyncStorage.getItem("role");
+//       const selectedDeviceMACId = selectedValue || ""; // Extract selected device MAC ID
+//       const fileType = "pdf";
+//       const meterType = JSON.parse(
+//         await AsyncStorage.getItem("selectedMeterType")
+//       );
+//       const deviceType = JSON.parse(
+//         await AsyncStorage.getItem("selectedDeviceType")
+//       );
+//       const fromDate = "";
+//       const toDate = "";
+//       const url = https://amr.embel.co.in:/iotmeter/nbiot/getalertreportsbetweendateanddevicewise?role=user&fkUserId=${selectedUser}&meterType=${meterType}&deviceType=${deviceType}&fileType=${fileType}&deviceName=${selectedDeviceMACId}&fromDate=${fromDate}&toDate=${toDate};
+
+//       const token = await AsyncStorage.getItem("token");
+
+//       const response = await RNFetchBlob.config(options).fetch("GET", url, {
+//         Authorization: Bearer ${token},
+//       });
+//       console.log("File downloaded tourlurlurlurlurlurlurl:", url);
+//       alert("File Downloaded Successfully.");
+//       console.log("File downloaded to:", response.path());
+//     } catch (error) {
+//       console.error("Error downloading file:", error);
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+//         <TouchableOpacity
+//           style={styles.downloadButton}
+//           onPress={() =>
+//             handleExcelDownload1tabsMacId(selectedUser, selectedValue)
+//           }
+//         >
+//           <View style={styles.icongraph}>
+//             <Icon name="file-excel-o" size={15} color="#fff" />
+//           </View>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           style={styles.downloadButton}
+//           onPress={() =>
+//             handlePDFDownload1tabsMacId(selectedUser, selectedValue)
+//           }
+//         >
+//           <View style={styles.icongraph}>
+//             <Icon name="file-pdf-o" size={15} color="#fff" />
+//           </View>
+//         </TouchableOpacity>
+//       </View>
+
+
+
+//       <View
+//         style={{
+//           flexDirection: "row",
+//           justifyContent: "space-between",
+//           paddingRight: 3,
+//           // paddingTop: 7,
+//           paddingLeft:5
+//         }}
+//       >
+//         <View style={{ width: "48%" }}>
+//           <Text style={styles.dropdowntext}>User List</Text>
+//           <View style={styles.rnpickerpickercss}>
+//             <RNPickerSelect
+//               placeholder={{
+//                 label: "Select user",
+//                 value: null,
+//               }}
+//               onValueChange={(itemValue) => {
+//                 setSelectedUser(itemValue);
+//               }}
+//               items={userList}
+//               value={selectedUser}
+//             />
+//           </View>
+//         </View>
+
+//         <View style={{ width: "48%" }}>
+//           <Text style={styles.dropdowntext}>Device List</Text>
+//           <View style={styles.rnpickerpickercss}>
+//             <RNPickerSelect
+//               placeholder={{
+//                 label: "Select Device",
+//                 value: null,
+//               }}
+//               onValueChange={(itemValue) => {
+//                 setSelectedValue(itemValue);
+//               }}
+//               items={deviceList}
+//               value={selectedValue}
+//             />
+//           </View>
+//         </View>
+//       </View>
+
+//       <ScrollView
+//         contentContainerStyle={styles.scrollContainer}
+//         onScroll={handleScroll}
+//         scrollEventThrottle={16}
+//       >
+//         {payloadList.length > 0 ? (
+//           payloadList.map(renderUserRow)
+//         ) : (
+//           <View style={styles.noDataContainer}>
+//             <Text style={styles.noDataText}>Data not available</Text>
+//             <FontAwesome name="exclamation-circle" size={24} color="red" />
+//           </View>
+//         )}
+//       </ScrollView>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     padding: 10,
+//   },
+//   downloadButton: {
+//     backgroundColor: "#e57d30",
+//     padding: 4,
+//     marginTop: 2,
+//     marginLeft: 7,
+//     marginRight: 1,
+//     borderRadius: 5,
+//     alignItems: "center",
+//     width: 35,
+//   },
+//   icongraph: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//   },
+//   downloadButtonText: {
+//     color: "white",
+//     fontWeight: "bold",
+//     fontSize: 12,
+//     marginLeft: 1,
+//   },
+//   filterContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     marginBottom: 10,
+//   },
+//   datepickercss: {
+//     marginBottom: 7,
+//     heading: 10,
+//     border: null,
+//     borderRadius: 4,
+//     backgroundColor: "white",
+//     shadowColor: "#02060c",
+//     shadowOpacity: 10,
+//     elevation: 20,
+//     height: 30,
+//     width: "100%",
+//     justifyContent: "center",
+//     borderRadius: 3,
+//     fontFamily: "Roboto-Regular",
+//   },
+//   dropdowntext: {
+//     marginVertical: 3,
+//     marginLeft: 1,
+//     fontFamily: "Roboto-Bold",
+//     fontSize: 12,
+//     color: "#010048",
+//   },
+//   rnpickerpickercss: {
+//     marginBottom: 7,
+//     heading: 8,
+//     border: null,
+//     borderRadius: 4,
+//     backgroundColor: "white",
+//     shadowColor: "#02060c",
+//     shadowOpacity: 10,
+//     elevation: 20,
+//     height: 30,
+//     width: "100%",
+//     justifyContent: "center",
+//     borderRadius: 3,
+//     fontFamily: "Roboto-Regular",
+//   },
+
+//   payloadRow: {
+//     marginBottom: 10,
+//   },
+//   flatStyle: {
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 2 },
+//     elevation: 5,
+//     marginVertical: 0,
+//     shadowOpacity: 0.46,
+//     shadowRadius: 8,
+//     backgroundColor: "#fff",
+//     padding: 8,
+//     borderRadius: 16,
+//     margin: 3,
+//   },
+//   deviceName: {
+//     color: "#010048",
+//     fontSize: 17,
+//     fontFamily: "Roboto-Medium",
+//     fontWeight: "700",
+//   },
+//   alertContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     width: "100%",
+//     paddingTop: 8,
+//     paddingBottom: 18,
+//   },
+//   expandedAlertContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     width: "100%",
+//     paddingTop: 8,
+//     paddingBottom: 8,
+//   },
+//   alertText: {
+//     fontSize: 15,
+//     fontFamily: "Roboto-Medium",
+//     fontWeight: "700",
+//     textAlign: "center",
+//   },
+//   alertLabel: {
+//     color: "#142d73",
+//     fontWeight: "600",
+//     fontSize: 12,
+//     fontFamily: "Roboto-Medium",
+//     textAlign: "center",
+//   },
+//   moreButton: {
+//     paddingTop: 8,
+//     paddingBottom: 8,
+//     alignItems: "center",
+//   },
+//   moreButtonText: {
+//     color: "#007BFF",
+//   },
+//   noDataContainer: {
+//     alignItems: "center",
+//     justifyContent: "center",
+//     padding: 20,
+//   },
+//   noDataText: {
+//     fontSize: 18,
+//     color: "#555",
+//     marginBottom: 10,
+//   },
+// });
+
+// export default AdminDeviceWiseNbiotTab;
